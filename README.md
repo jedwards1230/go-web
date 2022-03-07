@@ -13,3 +13,8 @@ go run server.go
 ```
 go run client.go
 ```
+
+### Rebuild protobuffer
+```
+protoc --go_out=plugins=grpc:. chat.proto
+```
