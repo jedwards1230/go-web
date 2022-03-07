@@ -17,8 +17,8 @@ func main() {
 	port := flag.Int("port", 8090, "Port for the client to connect to")
 	flag.Parse()
 
+	// Prepare server connection
 	var conn *grpc.ClientConn
-
 	fmt.Println(fmt.Sprintf("Connecting to %v:%d", *ip, *port))
 	fmt.Println("Sending request...")
 	conn, err := grpc.Dial(fmt.Sprintf(":%d", *port), grpc.WithInsecure())
@@ -27,6 +27,7 @@ func main() {
 	}
 	defer conn.Close()
 
+	
 	c := proto.NewChatServiceClient(conn)
 
 	msg := proto.Request{
