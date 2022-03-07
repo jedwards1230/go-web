@@ -1,0 +1,15 @@
+syntax = "proto3";
+package proto;
+option go_package = ".";
+
+message request {
+    string name = 1;
+}
+
+message response {
+    string greeting = 1;
+}
+
+service ChatService {
+    rpc Hello(request) returns (response) {};
+}

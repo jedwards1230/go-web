@@ -1,15 +1,16 @@
-package go_web
+package main
 
 import (
-	"context"
 	"encoding/json"
 	"flag"
 	"fmt"
 	"log"
+	"net"
 	"net/http"
 
+	"github.com/jedwards1230/go-web/proto"
+
 	"google.golang.org/grpc"
-	"github.com/jedwards1230/go-web/pb"
 )
 
 func headers(w http.ResponseWriter, req *http.Request) {
@@ -32,7 +33,7 @@ func return_json(w http.ResponseWriter, req *http.Request) {
 	json.NewEncoder(w).Encode(payload)
 }
 
-func server() {
+func main() {
 	// Parse cli arguments
 	ip := flag.String("ip", "127.0.0.1", "IP for the client to connect to")
 	port := flag.Int("port", 8090, "Port for the server to listen on")
@@ -42,14 +43,20 @@ func server() {
 	http.HandleFunc("/headers", headers)
 	http.HandleFunc("/return_json", return_json)
 
-	s := grpc.NewServer()
-	pb.RegisterGreetServiceServer(s, &server{})
-
-	if err := s.Serve(lis); err != nil {
+	// Start http server
+	log.Println(fmt.Sprintf("Starting server at %v:%d", *ip, *port))
+	lis, err := net.Listen("tcp", fmt.Sprintf(":%d", *port))
+	// Panic if error
+	if err != nil {
 		log.Fatalf("Failed to start server %v", err)
 	}
 
-	// Start http server
-	log.Println(fmt.Sprintf("Starting server at %v:%d", *ip, *port))
-	http.ListenAndServe(fmt.Sprintf(":%d", *port), nil)
+	s := proto.Server{}
+	grpcServer := grpc.NewServer()
+
+	proto.RegisterChatServiceServer(grpcServer, &s)
+
+	if err := grpcServer.Serve(lis); err != nil {
+		log.Fatal("Failed to serve gRPC")
+	}
 }
