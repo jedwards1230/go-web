@@ -2,6 +2,7 @@ package main
 
 import (
 	"encoding/json"
+	"flag"
 	"fmt"
 	"log"
 	"net/http"
@@ -28,13 +29,16 @@ func return_json(w http.ResponseWriter, req *http.Request) {
 }
 
 func main() {
-	var port = 8090
+	// Parse cli arguments
+	ip := flag.String("ip", "127.0.0.1", "IP for the client to connect to")
+	port := flag.Int("port", 8090, "Port for the server to listen on")
+	flag.Parse()
 
 	// Initialize handlers
 	http.HandleFunc("/headers", headers)
 	http.HandleFunc("/return_json", return_json)
 
 	// Start http server
-	log.Println("Starting server at port:", port)
-	http.ListenAndServe(":8090", nil)
+	log.Println(fmt.Sprintf("Starting server at %v:%d", *ip, *port))
+	http.ListenAndServe(fmt.Sprintf(":%d", *port), nil)
 }
