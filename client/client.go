@@ -2,6 +2,7 @@ package main
 
 import (
 	"bufio"
+	"context"
 	"flag"
 	"fmt"
 	"log"
@@ -10,7 +11,6 @@ import (
 
 	chat "github.com/jedwards1230/go-web/proto"
 
-	"golang.org/x/net/context"
 	"google.golang.org/grpc"
 )
 
