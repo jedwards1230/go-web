@@ -9,7 +9,7 @@ import (
 type Server struct {
 }
 
-func (s *Server) Hello(ctx context.Context, message *Message) (*Message, error) {
-	log.Printf("Received message body from client: %s", message.Body)
-	return &Message{Body: "Hello from the server"}, nil
+func (s *Server) Hello(ctx context.Context, message *Request) (*Response, error) {
+	log.Printf("Received message from client: %s", message.Name)
+	return &Response{Greeting: "Hello from the server"}, nil
 }

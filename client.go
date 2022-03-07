@@ -1,45 +1,42 @@
 package main
 
 import (
-	"bufio"
-	"encoding/json"
 	"flag"
 	"fmt"
 	"log"
-	"net/http"
+
+	"github.com/jedwards1230/go-web/proto"
+
+	"golang.org/x/net/context"
+	"google.golang.org/grpc"
 )
 
-func client() {
+func main() {
 	// Parse cli arguments
 	ip := flag.String("ip", "127.0.0.1", "IP for the client to connect to")
 	port := flag.Int("port", 8090, "Port for the client to connect to")
-	dir := flag.String("dir", "", "Director to connect to")
 	flag.Parse()
 
-	// Get response from host
-	fmt.Println(fmt.Sprintf("Connecting to %v:%d%v", *ip, *port, *dir))
+	var conn *grpc.ClientConn
+
+	fmt.Println(fmt.Sprintf("Connecting to %v:%d", *ip, *port))
 	fmt.Println("Sending request...")
-	resp, err := http.Get(fmt.Sprintf("http://%v:%d/%v", *ip, *port, *dir))
-	// Panic if error
+	conn, err := grpc.Dial(fmt.Sprintf(":%d", *port), grpc.WithInsecure())
 	if err != nil {
-		log.Fatal(err)
+		log.Fatal("Could not connect")
 	}
-	defer resp.Body.Close()
+	defer conn.Close()
 
-	// Create scanner object to read http response
-	fmt.Println("Response Status: ", resp.Status)
-	scanner := bufio.NewScanner(resp.Body)
+	c := proto.NewChatServiceClient(conn)
 
-	// Print each line the scanner finds
-	for i := 0; scanner.Scan() && i < 5; i++ {
-		var jsonMap map[string]interface{}
-		json.Unmarshal([]byte(scanner.Text()), &jsonMap)
-		fmt.Println("Key 1:", jsonMap["key1"])
-		fmt.Println("Key 2:", jsonMap["key2"])
+	msg := proto.Request{
+		Name: "Hello from the client",
 	}
 
-	// Panic if the scanner throws an error
-	if err := scanner.Err(); err != nil {
-		log.Fatal(err)
+	response, err := c.Hello(context.Background(), &msg)
+	if err != nil {
+		log.Fatal("Error when making request")
 	}
+
+	fmt.Println("Response from server:", response.Greeting)
 }
