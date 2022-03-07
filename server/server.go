@@ -6,7 +6,7 @@ import (
 	"log"
 	"net"
 
-	"github.com/jedwards1230/go-web/proto"
+	chat "github.com/jedwards1230/go-web/proto"
 
 	"google.golang.org/grpc"
 )
@@ -20,16 +20,14 @@ func main() {
 	// Start http server
 	log.Println(fmt.Sprintf("Starting server at %v:%d", *ip, *port))
 	lis, err := net.Listen("tcp", fmt.Sprintf(":%d", *port))
-	// Panic if error
 	if err != nil {
 		log.Fatalf("Failed to start server %v", err)
 	}
 
-	s := proto.Server{}
+	// Establish gRPC server
+	s := chat.Server{}
 	grpcServer := grpc.NewServer()
-
-	proto.RegisterChatServiceServer(grpcServer, &s)
-
+	chat.RegisterChatServiceServer(grpcServer, &s)
 	if err := grpcServer.Serve(lis); err != nil {
 		log.Fatal("Failed to serve gRPC")
 	}
