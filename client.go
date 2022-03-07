@@ -2,6 +2,7 @@ package main
 
 import (
 	"bufio"
+	"encoding/json"
 	"flag"
 	"fmt"
 	"log"
@@ -31,8 +32,10 @@ func main() {
 
 	// Print each line the scanner finds
 	for i := 0; scanner.Scan() && i < 5; i++ {
-		var obj = scanner.Text()
-		fmt.Println(obj)
+		var jsonMap map[string]interface{}
+		json.Unmarshal([]byte(scanner.Text()), &jsonMap)
+		fmt.Println("Key 1:", jsonMap["key1"])
+		fmt.Println("Key 2:", jsonMap["key2"])
 	}
 
 	// Panic if the scanner throws an error
