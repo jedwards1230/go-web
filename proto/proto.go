@@ -10,6 +10,6 @@ type Server struct {
 }
 
 func (s *Server) Hello(ctx context.Context, message *Request) (*Response, error) {
-	log.Printf("Received message from client: %s", message.Name)
-	return &Response{Greeting: "Hello from the server"}, nil
+	log.Printf("Received message from client: %s", message.Message)
+	return &Response{Message: "Hello from the server"}, nil
 }

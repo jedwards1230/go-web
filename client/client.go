@@ -1,9 +1,12 @@
 package main
 
 import (
+	"bufio"
 	"flag"
 	"fmt"
 	"log"
+	"os"
+	"strings"
 
 	chat "github.com/jedwards1230/go-web/proto"
 
@@ -27,9 +30,21 @@ func main() {
 	}
 	defer conn.Close()
 
-	// Message to send to server
+	// Get client message
+	fmt.Print("Message: ")
+	reader := bufio.NewReader(os.Stdin)
+	input, err := reader.ReadString('\n')
+	if err != nil {
+		fmt.Println("An error occured while reading input. Please try again", err)
+		return
+	}
+
+	// remove the delimeter from the string
+	input = strings.TrimSuffix(input, "\n")
+
+	// Format message to send to server
 	msg := chat.Request{
-		Name: "Hello from the client",
+		Message: input,
 	}
 
 	// Send message to server
@@ -38,5 +53,5 @@ func main() {
 	if err != nil {
 		log.Fatal("Error when making request")
 	}
-	fmt.Println("Response from server:", response.Greeting)
+	fmt.Println("Response from server:", response.Message)
 }
