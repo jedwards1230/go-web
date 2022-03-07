@@ -1,11 +1,15 @@
-package main
+package go_web
 
 import (
+	"context"
 	"encoding/json"
 	"flag"
 	"fmt"
 	"log"
 	"net/http"
+
+	"google.golang.org/grpc"
+	"github.com/jedwards1230/go-web/pb"
 )
 
 func headers(w http.ResponseWriter, req *http.Request) {
@@ -28,7 +32,7 @@ func return_json(w http.ResponseWriter, req *http.Request) {
 	json.NewEncoder(w).Encode(payload)
 }
 
-func main() {
+func server() {
 	// Parse cli arguments
 	ip := flag.String("ip", "127.0.0.1", "IP for the client to connect to")
 	port := flag.Int("port", 8090, "Port for the server to listen on")
@@ -37,6 +41,13 @@ func main() {
 	// Initialize handlers
 	http.HandleFunc("/headers", headers)
 	http.HandleFunc("/return_json", return_json)
+
+	s := grpc.NewServer()
+	pb.RegisterGreetServiceServer(s, &server{})
+
+	if err := s.Serve(lis); err != nil {
+		log.Fatalf("Failed to start server %v", err)
+	}
 
 	// Start http server
 	log.Println(fmt.Sprintf("Starting server at %v:%d", *ip, *port))

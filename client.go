@@ -1,4 +1,4 @@
-package main
+package go_web
 
 import (
 	"bufio"
@@ -9,7 +9,7 @@ import (
 	"net/http"
 )
 
-func main() {
+func client() {
 	// Parse cli arguments
 	ip := flag.String("ip", "127.0.0.1", "IP for the client to connect to")
 	port := flag.Int("port", 8090, "Port for the client to connect to")
