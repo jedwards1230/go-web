@@ -2,6 +2,8 @@
 
 Basic gRPC server and cli client 
 
+Planning to turn this into a gRPC chatroom either entirely in go or mixed with python
+
 ### Start Server (default port 8090)
 
 ```
